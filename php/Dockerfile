@@ -28,7 +28,9 @@ RUN echo "xdebug.idekey = PHPSTORM" >> /usr/local/etc/php/conf.d/docker-php-ext-
 
 FROM base as run
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 WORKDIR /var/www/html
-
+EXPOSE 9000
+EXPOSE 9001
+EXPOSE 9002
 CMD ["php-fpm"]
