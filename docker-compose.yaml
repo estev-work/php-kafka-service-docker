@@ -1,146 +1,38 @@
 version: '3.8'
 
 services:
-  app1:
+  app:
     build:
       context: ./php
       dockerfile: Dockerfile
-    container_name: app1
+    container_name: app
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - mysql
-      - kafka
-    networks:
-      - app-network
-  app2:
-    build:
-      context: ./php
-      dockerfile: Dockerfile
-    container_name: app2
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - mysql
-      - kafka
-    networks:
-      - app-network
-  app3:
-    build:
-      context: ./php
-      dockerfile: Dockerfile
-    container_name: app3
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - mysql
-      - kafka
-    networks:
-      - app-network
-  app4:
-    build:
-      context: ./php
-      dockerfile: Dockerfile
-    container_name: app4
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./project/src:/var/www/html
+      - ./project/service:/var/www/html
     depends_on:
       - mysql
       - kafka
     networks:
       - app-network
 
-  consumer1:
-    build:
-      context: ./consumer
-      dockerfile: Dockerfile
-    container_name: consumer1
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: always
-    environment:
-      - KAFKA_GROUP_ID=consumer-group-1
-    volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - app1
-      - app2
-      - app3
-      - app4
-      - kafka
-    networks:
-      - app-network
-
-  consumer2:
-    build:
-      context: ./consumer
-      dockerfile: Dockerfile
-    container_name: consumer2
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: always
-    environment:
-      - KAFKA_GROUP_ID=consumer-group-1
-    volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - app1
-      - app2
-      - app3
-      - app4
-      - kafka
-    networks:
-      - app-network
-
-  consumer3:
-    build:
-      context: ./consumer
-      dockerfile: Dockerfile
-    container_name: consumer3
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: always
-    environment:
-      - KAFKA_GROUP_ID=consumer-group-1
-    volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - app1
-      - app2
-      - app3
-      - app4
-      - kafka
-    networks:
-      - app-network
-
-  consumer4:
-    build:
-      context: ./consumer
-      dockerfile: Dockerfile
-    container_name: consumer4
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: always
-    environment:
-      - KAFKA_GROUP_ID=consumer-group-1
-    volumes:
-      - ./project/src:/var/www/html
-    depends_on:
-      - app1
-      - app2
-      - app3
-      - app4
-      - kafka
-    networks:
-      - app-network
+#  consumer:
+#    build:
+#      context: ./consumer
+#      dockerfile: Dockerfile
+#    container_name: consumer
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+#    restart: always
+#    environment:
+#      - KAFKA_GROUP_ID=consumer-group-1
+#    volumes:
+#      - ./project/src:/var/www/html
+#    depends_on:
+#      - app
+#      - kafka
+#    networks:
+#      - app-network
 
   nginx:
     build:
@@ -148,15 +40,11 @@ services:
       dockerfile: Dockerfile
     container_name: nginx
     volumes:
-      - ./project/src:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "${HTTP_PORT}:80"
     depends_on:
-      - app1
-      - app2
-      - app3
-      - app4
+      - app
     networks:
       - app-network
 
@@ -167,7 +55,7 @@ services:
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: question_service
+      MYSQL_DATABASE: service
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
@@ -215,10 +103,7 @@ services:
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
     depends_on:
-      - app1
-      - app2
-      - app3
-      - app4
+      - app
       - kafka
     networks:
       - app-network
