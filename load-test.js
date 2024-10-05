@@ -2,8 +2,8 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 export let options = {
-    vus: 5000, // Количество виртуальных пользователей
-    duration: '3600s', // Время теста
+    vus: 100000, // Количество виртуальных пользователей
+    duration: '300s', // Время теста
 };
 
 export default function () {
@@ -17,7 +17,12 @@ export default function () {
         },
     });
 
-    check(res, {
-        'status is 202': (r) => r.status === 202,
+    let isStatus202 = check(res, {
+        'status is 200': (r) => r.status === 200,
     });
+
+    if (!isStatus202) {
+        console.log(`Request failed with status: ${res.status}`);
+        console.log(`Response body: ${res.body}`);
+    }
 }
