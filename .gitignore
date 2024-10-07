@@ -2,3 +2,6 @@
 ./project/src/*
 .idea
 .env
+nginx/logs
+kafka/clusterID
+project/service
