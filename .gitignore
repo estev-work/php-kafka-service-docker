@@ -1,3 +1,4 @@
 ./project/service/*
 ./project/src/*
 .idea
+.env
