@@ -16,23 +16,22 @@ services:
     networks:
       - app-network
 
-#  consumer:
-#    build:
-#      context: ./consumer
-#      dockerfile: Dockerfile
-#    container_name: consumer
-#    extra_hosts:
-#      - "host.docker.internal:host-gateway"
-#    restart: always
-#    environment:
-#      - KAFKA_GROUP_ID=consumer-group-1
-#    volumes:
-#      - ./project/src:/var/www/html
-#    depends_on:
-#      - app
-#      - kafka
-#    networks:
-#      - app-network
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+    environment:
+      - KAFKA_GROUP_ID=consumer-group-1
+    entrypoint: ["php", "cli", "event:consume"]
+    volumes:
+      - ./project/service:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - app-network
 
   nginx:
     build:
