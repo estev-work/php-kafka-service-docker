@@ -7,10 +7,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    librdkafka-dev \
-    && docker-php-ext-install pdo_mysql mbstring zip \
-    && pecl install rdkafka \
-    && docker-php-ext-enable rdkafka
+    && docker-php-ext-install pdo_mysql mbstring zip sockets
 COPY php.ini /usr/local/etc/php/
 
 FROM base as xdebug

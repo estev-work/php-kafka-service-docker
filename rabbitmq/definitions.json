@@ -1,0 +1,78 @@
+{
+  "users": [
+    {
+      "name": "user",
+      "password": "password",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {"name": "/"}
+  ],
+  "permissions": [
+    {
+      "user": "user",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "queues": [
+    {
+      "name": "dead_letter",
+      "vhost": "/",
+      "durable": true
+    },
+    {
+      "name": "activity",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-dead-letter-exchange": "dead_letter_exchange",
+        "x-dead-letter-routing-key": "dead_letter"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "dead_letter_exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true
+    },
+    {
+      "name": "activity_exchange",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true
+    }
+  ],
+  "bindings": [
+    {
+      "source": "dead_letter_exchange",
+      "vhost": "/",
+      "destination": "dead_letter",
+      "destination_type": "queue",
+      "routing_key": "dead_letter"
+    },
+    {
+      "source": "activity_exchange",
+      "vhost": "/",
+      "destination": "activity",
+      "destination_type": "queue",
+      "routing_key": "activity.*"
+    }
+  ],
+  "policies": [
+    {
+      "vhost": "/",
+      "name": "ha-all",
+      "pattern": ".*",
+      "definition": {
+        "ha-mode": "all"
+      },
+      "priority": 1
+    }
+  ]
+}
