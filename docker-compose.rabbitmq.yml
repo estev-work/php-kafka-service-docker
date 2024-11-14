@@ -57,6 +57,19 @@ services:
     networks:
       - app-network
 
+  amq-proxy:
+    image: cloudamqp/amqproxy:latest
+    environment:
+      - AMQ_BROKER=amqp://rabbitmq-main.localdomain:5672
+    ports:
+      - "${AMQPROXY_PORT}:5673"
+    networks:
+      - app-network
+    depends_on:
+      - rabbitmq-main
+      - rabbitmq-node2
+      - rabbitmq-node-3
+
 volumes:
   rabbitmq_data_main:
   rabbitmq_data_node_2:
