@@ -59,16 +59,19 @@ services:
 
   amq-proxy:
     image: cloudamqp/amqproxy:latest
+    command: ["amqproxy", "-c", "/etc/amqproxy/config.ini"]
     environment:
       - AMQ_BROKER=amqp://rabbitmq-main.localdomain:5672
     ports:
       - "${AMQPROXY_PORT}:5673"
-    networks:
-      - app-network
     depends_on:
       - rabbitmq-main
       - rabbitmq-node2
       - rabbitmq-node-3
+    volumes:
+      - ./rabbitmq/proxy/config.ini:/etc/amqproxy/config.ini
+    networks:
+      - app-network
 
 volumes:
   rabbitmq_data_main:
