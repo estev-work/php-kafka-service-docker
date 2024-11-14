@@ -1,7 +1,7 @@
 services:
   rabbitmq-main:
     build:
-      context: ./rabbitmq
+      context: ./images
       dockerfile: Dockerfile
     hostname: rabbitmq-main.localdomain
     ports:
@@ -13,14 +13,14 @@ services:
       - RABBITMQ_USE_LONGNAME=true
     volumes:
       - rabbitmq_data_main:/var/lib/rabbitmq
-      - ./rabbitmq/definitions.json:/opt/definitions.json
-      - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./images/definitions.json:/opt/definitions.json
+      - ./images/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
     networks:
       - app-network
 
   rabbitmq-node2:
     build:
-      context: ./rabbitmq
+      context: ./images
       dockerfile: Dockerfile
     hostname: rabbitmq-node-2.localdomain
     ports:
@@ -33,14 +33,14 @@ services:
       - RABBITMQ_CLUSTER_PARTITION_HANDLING=${RABBITMQ_CLUSTER_PARTITION_HANDLING}
     volumes:
       - rabbitmq_data_node_2:/var/lib/rabbitmq
-      - ./rabbitmq/definitions.json:/opt/definitions.json
-      - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./images/definitions.json:/opt/definitions.json
+      - ./images/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
     networks:
       - app-network
 
   rabbitmq-node-3:
     build:
-      context: ./rabbitmq
+      context: ./images
       dockerfile: Dockerfile
     hostname: rabbitmq-node-3.localdomain
     ports:
@@ -52,8 +52,8 @@ services:
       - RABBITMQ_USE_LONGNAME=true
     volumes:
       - rabbitmq_data_node_3:/var/lib/rabbitmq
-      - ./rabbitmq/definitions.json:/opt/definitions.json
-      - ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./images/definitions.json:/opt/definitions.json
+      - ./images/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
     networks:
       - app-network
 
@@ -69,7 +69,7 @@ services:
       - rabbitmq-node2
       - rabbitmq-node-3
     volumes:
-      - ./rabbitmq/proxy/config.ini:/etc/amqproxy/config.ini
+      - ./images/proxy/config.ini:/etc/amqproxy/config.ini
     networks:
       - app-network
 
@@ -80,5 +80,5 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge
+    external: true
 

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build:
-      context: ./php
+      context: ./php/base
       dockerfile: Dockerfile
     deploy:
       replicas: 3
@@ -54,4 +54,4 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge
+    external: true

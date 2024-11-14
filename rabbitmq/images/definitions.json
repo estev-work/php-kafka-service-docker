@@ -44,7 +44,7 @@
     {
       "name": "activity_exchange",
       "vhost": "/",
-      "type": "topic",
+      "type": "direct",
       "durable": true
     }
   ],
