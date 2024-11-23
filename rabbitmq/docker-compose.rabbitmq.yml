@@ -1,0 +1,84 @@
+services:
+  rabbitmq-main:
+    build:
+      context: ./images
+      dockerfile: Dockerfile
+    hostname: rabbitmq-main.localdomain
+    ports:
+      - "${RABBITMQ_MANAGEMENT_PORT_MAIN}:15672"
+      - "${RABBITMQ_AMQP_PORT_MAIN}:5672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
+      - RABBITMQ_NODENAME=rabbit@rabbitmq-main.localdomain
+      - RABBITMQ_USE_LONGNAME=true
+    volumes:
+      - rabbitmq_data_main:/var/lib/rabbitmq
+      - ./images/definitions.json:/opt/definitions.json
+      - ./images/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+    networks:
+      - app-network
+
+  rabbitmq-node2:
+    build:
+      context: ./images
+      dockerfile: Dockerfile
+    hostname: rabbitmq-node-2.localdomain
+    ports:
+      - "${RABBITMQ_MANAGEMENT_PORT_2}:15672"
+      - "${RABBITMQ_AMQP_PORT_2}:5672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
+      - RABBITMQ_NODENAME=rabbit@rabbitmq-node-2.localdomain
+      - RABBITMQ_USE_LONGNAME=true
+      - RABBITMQ_CLUSTER_PARTITION_HANDLING=${RABBITMQ_CLUSTER_PARTITION_HANDLING}
+    volumes:
+      - rabbitmq_data_node_2:/var/lib/rabbitmq
+      - ./images/definitions.json:/opt/definitions.json
+      - ./images/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+    networks:
+      - app-network
+
+  rabbitmq-node-3:
+    build:
+      context: ./images
+      dockerfile: Dockerfile
+    hostname: rabbitmq-node-3.localdomain
+    ports:
+      - "${RABBITMQ_MANAGEMENT_PORT_3}:15672"
+      - "${RABBITMQ_AMQP_PORT_3}:5672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
+      - RABBITMQ_NODENAME=rabbit@rabbitmq-node-3.localdomain
+      - RABBITMQ_USE_LONGNAME=true
+    volumes:
+      - rabbitmq_data_node_3:/var/lib/rabbitmq
+      - ./images/definitions.json:/opt/definitions.json
+      - ./images/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+    networks:
+      - app-network
+
+  amq-proxy:
+    image: cloudamqp/amqproxy:latest
+    command: ["amqproxy", "-c", "/etc/amqproxy/config.ini"]
+    environment:
+      - AMQ_BROKER=amqp://rabbitmq-main.localdomain:5672
+    ports:
+      - "${AMQPROXY_PORT}:5673"
+    depends_on:
+      - rabbitmq-main
+      - rabbitmq-node2
+      - rabbitmq-node-3
+    volumes:
+      - ./images/proxy/config.ini:/etc/amqproxy/config.ini
+    networks:
+      - app-network
+
+volumes:
+  rabbitmq_data_main:
+  rabbitmq_data_node_2:
+  rabbitmq_data_node_3:
+
+networks:
+  app-network:
+    external: true
+

@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  kafka-gen:
+    build:
+      context: ./kafka/images
+      dockerfile: Dockerfile
+    hostname: kafka-gen
+    container_name: kafka-gen
+    volumes:
+      - ./images/scripts/create_cluster_id.sh:/tmp/create_cluster_id.sh
+      - ./images/clusterID:/tmp/clusterID
+    command: "bash -c '/tmp/create_cluster_id.sh'"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

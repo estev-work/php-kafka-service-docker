@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build:
-      context: ./php
+      context: ./php/base
       dockerfile: Dockerfile
     deploy:
       replicas: 3
@@ -16,24 +16,6 @@ services:
     networks:
       - app-network
 
-#  consumer:
-#    build:
-#      context: ./consumer
-#      dockerfile: Dockerfile
-#    container_name: consumer
-#    extra_hosts:
-#      - "host.docker.internal:host-gateway"
-#    restart: always
-#    environment:
-#      - KAFKA_GROUP_ID=consumer-group-1
-#    volumes:
-#      - ./project/src:/var/www/html
-#    depends_on:
-#      - app
-#      - kafka
-#    networks:
-#      - app-network
-
   nginx:
     build:
       context: ./nginx
@@ -44,6 +26,7 @@ services:
       - ./nginx/logs:/var/log/nginx
     ports:
       - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
     depends_on:
       - app
     networks:
@@ -55,10 +38,10 @@ services:
       dockerfile: Dockerfile
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: service
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USER}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
     ports:
       - "${DB_PORT}:3306"
     volumes:
@@ -71,4 +54,4 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge
+    external: true

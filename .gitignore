@@ -3,5 +3,5 @@
 .idea
 .env
 nginx/logs
-kafka/clusterID
+brokers/kafka/clusterID
 project/service
